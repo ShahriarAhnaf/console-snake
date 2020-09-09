@@ -3,16 +3,16 @@
 
 #include <iostream>
 #include <cstdlib>
-
+#include <iomanip>
 
 
 using namespace std;
 //global variable
 bool gameOver;
-const int mapWidth = 25;
-const int mapHeight = 25;
-int x, y;
-int foodx, foody;
+const int mapWidth = 40;
+const int mapHeight = 20;
+int snekX, snekY;
+int foodX, foodY;
 int snekSize;
 int score;
 
@@ -23,10 +23,10 @@ void Setup()
 {
     gameOver = false;
     dir = STOP;
-    int x = mapWidth/2;
-    int y = mapHeight / 2;
-    foodx = rand() % mapWidth;
-    foody = rand() % mapHeight;
+    snekX = mapWidth/2;
+    snekY = mapHeight / 2;
+    foodX = rand() % mapWidth;
+    foodY = rand() % mapHeight;
     score = 0;
 
 }
@@ -39,26 +39,40 @@ void Input()
 void Draw()
 {
     system("cls");
+    //top part
+    for (int x = 0; x <= mapWidth + 1; x++)
+    {
+        cout <<  "$";
+    }
+    cout << endl;
     for (int y = 0; y <= mapHeight; y++)
     {
         for (int x = 0; x <= mapWidth; x++)
         {
-            if (x == 0 || x == mapWidth)
+            if (x == 0 || x == mapWidth )// checking for sidewalls
             {
                 cout << "$";
-
             }
-            else if (y == 0 || y == mapHeight)
+            //drawing the food and snake
+            if (y == foodY && x == foodX)
             {
-                cout << "$";
+                cout << "F";
+            }
+            else if (y == snekY && x == snekX)
+            {
+                cout << "S";
             }
             else
             {
-                cout << " ";
+                cout << " "; // middle of the map
             }
         }
         cout << endl;
-
+    }
+    //bottom wall
+    for (int x = 0; x <= mapWidth + 1; x++)
+    {
+        cout << "$";
     }
 }
 
@@ -69,6 +83,8 @@ void logic()
 
 int main()
 {
+
+    Setup(); // must be called outside
     while (!gameOver)
     {
         Draw();
