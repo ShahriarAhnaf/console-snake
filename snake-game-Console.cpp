@@ -59,6 +59,8 @@ void Input()
 
 void Draw()
 {
+    bool drewAlredy = false;
+
     system("cls");
 
     //top part
@@ -74,32 +76,35 @@ void Draw()
     {
         for (int x = 0; x <= mapWidth + 1; x++)
         {
+
+            drewAlredy = false; // resetting the variable
             if (x == 0 || x == mapWidth + 1)// checking for sidewalls, prefered to make it bigger than map width
             {
                 cout << "$";
+                drewAlredy = true;
+            }
+            //looping checks through all the segments
+            for (int g = 0; g < snekSize; g++)
+            {
+                if (y == snekY[g] && x == snekX[g])
+                {
+                    cout << "S";
+                    drewAlredy = true;
+                }
             }
             //drawing the food and snake
             if (y == foodY && x == foodX)
             {
                 cout << "F";
+                drewAlredy = true;
             }
-            else if (y == snekY[0] && x == snekX[0])
-            { //looping through all the segments
-                for (int g = 0; g < snekSize; g++)
-                {
-                    if (y == snekY[g] && x == snekX[g])
-                    {
-                        cout << "S";
-                    }
-                }
-            }
-            else
+
+            if(!drewAlredy)//if no drawing of anything happened, it must be empty space so space!
             {
                 cout << " "; // middle of the map
             }
-            
         }
-        cout << endl;
+        cout << endl;// space to next line for thhe loop 
     }
     //bottom wall
     for (int x = 0; x <= mapWidth + 2; x++)
@@ -159,8 +164,8 @@ void logic()
     //follow logic snake
     for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
     {
-        snekX[i] = prevX[i];
-        snekY[i] = prevY[i];
+        snekX[i] = prevX[i - 1];
+        snekY[i] = prevY[i - 1 ];
     }
 
 }          
