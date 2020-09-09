@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
-
+#include <conio.h> //console input output header
 
 using namespace std;
 //global variable
@@ -33,7 +33,26 @@ void Setup()
 
 void Input()
 {
-
+    if (_kbhit())
+    {
+        switch (_getch())
+        {
+        case 'w':
+            dir = UP;
+            break;
+        case 'a':
+            dir = LEFT;
+            break;
+        case 's':
+            dir = DOWN;
+            break;
+        case 'd':
+            dir = RIGHT;
+            break;
+        case 'x':
+            gameOver = true;
+        }
+    }
 }
 
 void Draw()
@@ -47,9 +66,9 @@ void Draw()
     cout << endl;
     for (int y = 0; y <= mapHeight; y++)
     {
-        for (int x = 0; x <= mapWidth; x++)
+        for (int x = 0; x <= mapWidth + 1; x++)
         {
-            if (x == 0 || x == mapWidth )// checking for sidewalls
+            if (x == 0 || x == mapWidth + 1 )// checking for sidewalls, prefered to make it bigger than map width
             {
                 cout << "$";
             }
@@ -78,7 +97,33 @@ void Draw()
 
 void logic()
 {
+    switch (dir)
+    {
+    case STOP:
+        break;
+    case LEFT:
+        snekX--;
+        break;
+    case RIGHT:
+        snekX++;
+        break;
+    case UP: 
+        snekY--;
+        break; 
+    case DOWN:
+        snekY++;
+        break;
+    }
 
+
+    //wall control
+    if (snekX > mapWidth ||
+        snekX < 0 ||
+        snekY > mapHeight||
+        snekY < 0)
+    {
+        gameOver = true;
+    }
 }
 
 int main()
