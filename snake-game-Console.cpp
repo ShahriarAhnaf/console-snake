@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <ctime> //for better rng
 #include <iomanip>
 #include <conio.h> //console input output header
 
@@ -11,7 +12,7 @@ using namespace std;
 bool gameOver;
 const int mapWidth = 40;
 const int mapHeight = 20;
-int snekX, snekY;
+int snekX[50], snekY[50];
 int foodX, foodY;
 int snekSize;
 int score;
@@ -23,12 +24,13 @@ void Setup()
 {
     gameOver = false;
     dir = STOP;
-    snekX = mapWidth/2;
-    snekY = mapHeight / 2;
+    snekX[0] = mapWidth/2;
+    snekY[0] = mapHeight / 2;
     foodX = rand() % mapWidth;
     foodY = rand() % mapHeight;
     score = 0;
-
+    snekSize = 1;
+    
 }
 
 void Input()
@@ -58,17 +60,21 @@ void Input()
 void Draw()
 {
     system("cls");
+
     //top part
-    for (int x = 0; x <= mapWidth + 1; x++)
+    for (int x = 0; x <= mapWidth + 2; x++)
     {
         cout <<  "$";
     }
+
+    cout << setw(mapWidth) << "score : " << score;
+
     cout << endl;
     for (int y = 0; y <= mapHeight; y++)
     {
         for (int x = 0; x <= mapWidth + 1; x++)
         {
-            if (x == 0 || x == mapWidth + 1 )// checking for sidewalls, prefered to make it bigger than map width
+            if (x == 0 || x == mapWidth + 1)// checking for sidewalls, prefered to make it bigger than map width
             {
                 cout << "$";
             }
@@ -77,54 +83,87 @@ void Draw()
             {
                 cout << "F";
             }
-            else if (y == snekY && x == snekX)
-            {
-                cout << "S";
+            else if (y == snekY[0] && x == snekX[0])
+            { //looping through all the segments
+                for (int g = 0; g < snekSize; g++)
+                {
+                    if (y == snekY[g] && x == snekX[g])
+                    {
+                        cout << "S";
+                    }
+                }
             }
             else
             {
                 cout << " "; // middle of the map
             }
+            
         }
         cout << endl;
     }
     //bottom wall
-    for (int x = 0; x <= mapWidth + 1; x++)
+    for (int x = 0; x <= mapWidth + 2; x++)
     {
         cout << "$";
     }
+
 }
 
 void logic()
 {
+    //for later assignment into each other
+    int prevX[50], prevY[50];
+    for (int h = snekSize; h > -1; h--)
+    {
+        prevX[h] = snekX[h];
+        prevY[h] = snekY[h];
+    }
+    
     switch (dir)
     {
     case STOP:
         break;
     case LEFT:
-        snekX--;
+        snekX[0]--;
         break;
     case RIGHT:
-        snekX++;
+        snekX[0]++;
         break;
     case UP: 
-        snekY--;
+        snekY[0]--;
         break; 
     case DOWN:
-        snekY++;
+        snekY[0]++;
         break;
     }
 
 
     //wall control
-    if (snekX > mapWidth ||
-        snekX < 0 ||
-        snekY > mapHeight||
-        snekY < 0)
+    if (snekX[0] > mapWidth ||
+        snekX[0] < 0 ||
+        snekY[0] > mapHeight ||
+        snekY[0] < 0)
     {
         gameOver = true;
     }
-}
+    //food eating logic, randomize next spawn and increase score
+    if (snekY[0] == foodY &&
+        snekX[0] == foodX)
+    {
+        score++;
+        foodX = rand() % mapWidth;
+        foodY = rand() % mapHeight;
+        snekSize++;
+    }
+
+    //follow logic snake
+    for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
+    {
+        snekX[i] = prevX[i];
+        snekY[i] = prevY[i];
+    }
+
+}          
 
 int main()
 {
