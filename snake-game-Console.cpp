@@ -6,15 +6,15 @@
 #include <ctime> //for better rng
 #include <iomanip>
 #include <conio.h> //console input output header
-
+#include <Windows.h>
 
 using namespace std;
 //global variable
 bool gameOver;
 const int mapWidth = 40;
-const int mapHeight = 20;
-int snekX[50], snekY[50];
-int foodX, foodY;
+const int mapHeight = 10;
+int snekXY[50][2];// 50 rows, 2 coloums
+int foodXY[1][1];// 0 = x, y = 1 for assignment
 int snekSize;
 int score;
 
@@ -25,10 +25,10 @@ void Setup()
 {
     gameOver = false;
     dir = STOP;
-    snekX[0] = mapWidth/2;
-    snekY[0] = mapHeight / 2;
-    foodX = rand() % mapWidth;
-    foodY = rand() % mapHeight;
+    snekXY[0][0] = mapWidth/2;
+    snekXY[0][1] = mapHeight / 2;
+    foodXY[0][0] = rand() % mapWidth;
+    foodXY[0][1] = rand() % mapHeight;
     score = 0;
     snekSize = 1;
     
@@ -86,14 +86,14 @@ void Draw()
             //looping checks through all the segments
             for (int g = 0; g < snekSize; g++)
             {
-                if (y == snekY[g] && x == snekX[g])
+                if (y == snekXY[g][1] && x == snekXY[g][0])
                 {
-                    cout << "S";
+                    cout << "s";
                     drewAlredy = true;
                 }
             }
             //drawing the food and snake
-            if (y == foodY && x == foodX)
+            if (y == foodXY[0][1] && x == foodXY[0][0])
             {
                 cout << "F";
                 drewAlredy = true;
@@ -118,11 +118,10 @@ void Draw()
 void logic()
 {
     //for later assignment into each other
-    int prevX[50], prevY[50];
+    int prevXY[50][2];// this is where the real efficiency comes
     for (int h = snekSize; h > -1; h--)
     {
-        prevX[h] = snekX[h];
-        prevY[h] = snekY[h];
+        prevXY[h][h] = snekXY[h][h];
     }
     
     switch (dir)
@@ -130,62 +129,64 @@ void logic()
     case STOP:
         break;
     case LEFT:
-        snekX[0]--;
+        snekXY[0][0]--;
         break;
     case RIGHT:
-        snekX[0]++;
+        snekXY[0][0]++;
         break;
     case UP: 
-        snekY[0]--;
+        Sleep(50);
+        snekXY[0][1]--;
         break; 
     case DOWN:
-        snekY[0]++;
+        Sleep(50);
+        snekXY[0][1]++;
         break;
     }
 
 
     //wall control which will makke it wrap around
-    if (snekX[0] > mapWidth)    
+    if (snekXY[0][0] > mapWidth)    
     {
-        snekX[0] = 0;
+        snekXY[0][0] = 0;
     }
-    else if (snekX[0] < 0)
+    else if (snekXY[0][0] < 0)
     {
-        snekX[0] = mapWidth;
+        snekXY[0][0] = mapWidth;
     }
-    else if (snekY[0] > mapHeight)
+    else if (snekXY[0][1] > mapHeight)
     {
-        snekY[0] = 0;
+        snekXY[0][1] = 0;
     }
-    else if (snekY[0] < 0)
+    else if (snekXY[0][1] < 0)
     {
-        snekY[0] = mapHeight;
+        snekXY[0][1] = mapHeight;
     }
     //food eating logic, randomize next spawn and increase score
-    if (snekY[0] == foodY &&
-        snekX[0] == foodX)
+    if (snekXY[0][0] == foodXY[0][0] &&
+        snekXY[0][1] == foodXY[0][1])
     {
         score++;
-        foodX = rand() % mapWidth;
-        foodY = rand() % mapHeight;
+        foodXY[0][0] = rand() % mapWidth;
+        foodXY[0][1] = rand() % mapHeight;
         snekSize++;
     }
     //self eating logic
     for (int i = 1; i < snekSize; i++)
     {
-        if (snekX[0] == snekX[i] && snekY[0] == snekY[i])
+        if (snekXY[0] == snekXY[i])
         {
             gameOver = true;
         }
 
+        
     }
     //follow logic snake
     for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
     {
-        snekX[i] = prevX[i - 1];
-        snekY[i] = prevY[i - 1 ];
+        snekXY[i][0] = prevXY[i -1 ][0];
+        snekXY[i][1] = prevXY[i -1 ][1];
     }
-
 }          
 
 int main()
