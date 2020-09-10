@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <conio.h> //console input output header
 
+
 using namespace std;
 //global variable
 bool gameOver;
@@ -69,8 +70,7 @@ void Draw()
         cout <<  "$";
     }
 
-    cout << setw(mapWidth) << "score : " << score;
-
+    
     cout << endl;
     for (int y = 0; y <= mapHeight; y++)
     {
@@ -111,6 +111,7 @@ void Draw()
     {
         cout << "$";
     }
+    cout << "\n score : " << score;
 
 }
 
@@ -143,13 +144,22 @@ void logic()
     }
 
 
-    //wall control
-    if (snekX[0] > mapWidth ||
-        snekX[0] < 0 ||
-        snekY[0] > mapHeight ||
-        snekY[0] < 0)
+    //wall control which will makke it wrap around
+    if (snekX[0] > mapWidth)    
     {
-        gameOver = true;
+        snekX[0] = 0;
+    }
+    else if (snekX[0] < 0)
+    {
+        snekX[0] = mapWidth;
+    }
+    else if (snekY[0] > mapHeight)
+    {
+        snekY[0] = 0;
+    }
+    else if (snekY[0] < 0)
+    {
+        snekY[0] = mapHeight;
     }
     //food eating logic, randomize next spawn and increase score
     if (snekY[0] == foodY &&
@@ -160,7 +170,15 @@ void logic()
         foodY = rand() % mapHeight;
         snekSize++;
     }
+    //self eating logic
+    for (int i = 1; i < snekSize; i++)
+    {
+        if (snekX[0] == snekX[i] && snekY[0] == snekY[i])
+        {
+            gameOver = true;
+        }
 
+    }
     //follow logic snake
     for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
     {
