@@ -10,7 +10,7 @@
 #include "snake-game-Console.h"
 
 using namespace std;
-snakeGame::snakeGame()
+snakeGame::snakeGame() // insted of using the setup funciton using a constructor does itfaster.
 {
     gameOver = false;
     dir = STOP;
@@ -19,13 +19,9 @@ snakeGame::snakeGame()
     foodXY[0][0] = rand() % mapWidth;
     foodXY[0][1] = rand() % mapHeight;
     score = 0;
-    snekSize = 1;
+    snekSize = score + 1;
 }
-void snakeGame::Setup()
-{
-    
-    
-}
+
 
 void snakeGame::Input()
 {
@@ -58,13 +54,13 @@ void snakeGame::Draw()
     system("cls");
 
     //top part
-    for (int x = 0; x <= mapWidth + 2; x++)
+    for (int x = 0; x <= mapWidth + 1; x++)
     {
         cout <<  "$";
     }
 
-    
     cout << endl;
+// the body of the map
     for (int y = 0; y <= mapHeight; y++)
     {
         for (int x = 0; x <= mapWidth + 1; x++)
@@ -100,12 +96,22 @@ void snakeGame::Draw()
         cout << endl;// space to next line for thhe loop 
     }
     //bottom wall
-    for (int x = 0; x <= mapWidth + 2; x++)
+    for (int x = 0; x <= mapWidth + 1; x++)
     {
         cout << "$";
     }
-    cout << "\n score : " << score;
 
+    cout << "\n score : " << score << endl;
+    
+    /* to check coordinates with logic, TESTING ONLY
+    cout << snekSize;
+    for (int i = 0; i < snekSize; i++)
+    {
+        for (int j = 0; j < 2; j++) 
+        {
+            cout << "\n snek " << i << " : " << snekXY[i][j];
+        }
+    }*/ 
 }
       
 
@@ -115,7 +121,10 @@ void snakeGame::logic()
     int prevXY[50][2];// this is where the real efficiency comes
     for (int h = snekSize; h > -1; h--)
     {
-        prevXY[h][h] = snekXY[h][h];
+        for (int k = 0; k < 2; k++)
+        {
+            prevXY[h][k] = snekXY[h][k];
+        }
     }
 
     switch (dir)
@@ -129,11 +138,11 @@ void snakeGame::logic()
         snekXY[0][0]++;
         break;
     case UP:
-        Sleep(50);
+        Sleep(40);
         snekXY[0][1]--;
         break;
     case DOWN:
-        Sleep(50);
+        Sleep(40);
         snekXY[0][1]++;
         break;
     }
@@ -163,12 +172,13 @@ void snakeGame::logic()
         score++;
         foodXY[0][0] = rand() % mapWidth;
         foodXY[0][1] = rand() % mapHeight;
-        snekSize++;
+        snekSize = score + 1;
     }
     //self eating logic
     for (int i = 1; i < snekSize; i++)
     {
-        if (snekXY[0] == snekXY[i])
+        if (snekXY[0][0] == snekXY[i][0] && 
+            snekXY[0][1] == snekXY[i][1])
         {
             gameOver = true;
         }
@@ -185,8 +195,6 @@ void snakeGame::logic()
 
 void snakeGame::start()
 {
-
-    Setup(); // must be called outside
     while (!gameOver)
     {
         Draw();
