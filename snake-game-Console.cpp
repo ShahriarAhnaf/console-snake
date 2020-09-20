@@ -7,34 +7,27 @@
 #include <iomanip>
 #include <conio.h> //console input output header
 #include <Windows.h>
+#include "snake-game-Console.h"
 
 using namespace std;
-//global variable
-bool gameOver;
-const int mapWidth = 40;
-const int mapHeight = 10;
-int snekXY[50][2];// 50 rows, 2 coloums
-int foodXY[1][1];// 0 = x, y = 1 for assignment
-int snekSize;
-int score;
-
-enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
-eDirection dir;
-
-void Setup()
+snakeGame::snakeGame()
 {
     gameOver = false;
     dir = STOP;
-    snekXY[0][0] = mapWidth/2;
+    snekXY[0][0] = mapWidth / 2;
     snekXY[0][1] = mapHeight / 2;
     foodXY[0][0] = rand() % mapWidth;
     foodXY[0][1] = rand() % mapHeight;
     score = 0;
     snekSize = 1;
+}
+void snakeGame::Setup()
+{
+    
     
 }
 
-void Input()
+void snakeGame::Input()
 {
     if (_kbhit())
     {
@@ -58,7 +51,7 @@ void Input()
     }
 }
 
-void Draw()
+void snakeGame::Draw()
 {
     bool drewAlredy = false;
 
@@ -114,8 +107,9 @@ void Draw()
     cout << "\n score : " << score;
 
 }
+      
 
-void logic()
+void snakeGame::logic()
 {
     //for later assignment into each other
     int prevXY[50][2];// this is where the real efficiency comes
@@ -123,7 +117,7 @@ void logic()
     {
         prevXY[h][h] = snekXY[h][h];
     }
-    
+
     switch (dir)
     {
     case STOP:
@@ -134,10 +128,10 @@ void logic()
     case RIGHT:
         snekXY[0][0]++;
         break;
-    case UP: 
+    case UP:
         Sleep(50);
         snekXY[0][1]--;
-        break; 
+        break;
     case DOWN:
         Sleep(50);
         snekXY[0][1]++;
@@ -146,7 +140,7 @@ void logic()
 
 
     //wall control which will makke it wrap around
-    if (snekXY[0][0] > mapWidth)    
+    if (snekXY[0][0] > mapWidth)
     {
         snekXY[0][0] = 0;
     }
@@ -179,17 +173,17 @@ void logic()
             gameOver = true;
         }
 
-        
+
     }
     //follow logic snake
     for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
     {
-        snekXY[i][0] = prevXY[i -1 ][0];
-        snekXY[i][1] = prevXY[i -1 ][1];
+        snekXY[i][0] = prevXY[i - 1][0];
+        snekXY[i][1] = prevXY[i - 1][1];
     }
-}          
+}
 
-int main()
+void snakeGame::start()
 {
 
     Setup(); // must be called outside
@@ -199,5 +193,6 @@ int main()
         Input();
         logic();
     }
+    
+   
 }
-
