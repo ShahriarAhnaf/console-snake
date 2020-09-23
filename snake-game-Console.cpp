@@ -5,47 +5,19 @@
 #include <cstdlib>
 #include <ctime> //for better rng
 #include <iomanip>
-#include <conio.h> //console input output header
-#include <Windows.h>
 #include "snake-game-Console.h"
 
 using namespace std;
 snakeGame::snakeGame() // insted of using the setup funciton using a constructor does itfaster.
 {
-    gameOver = false;
-    dir = STOP;
-    snekXY[0][0] = mapWidth / 2;
-    snekXY[0][1] = mapHeight / 2;
+    snek.snekXY[0][0] = mapWidth / 2;
+    snek.snekXY[0][1] = mapHeight / 2;
     foodXY[0][0] = rand() % mapWidth;
     foodXY[0][1] = rand() % mapHeight;
     score = 0;
-    snekSize = score + 1;
+    snek.snekSize = score + 1;
 }
 
-
-void snakeGame::Input()
-{
-    if (_kbhit())
-    {
-        switch (_getch())
-        {
-        case 'w':
-            dir = UP;
-            break;
-        case 'a':
-            dir = LEFT;
-            break;
-        case 's':
-            dir = DOWN;
-            break;
-        case 'd':
-            dir = RIGHT;
-            break;
-        case 'x':
-            gameOver = true;
-        }
-    }
-}
 
 void snakeGame::Draw()
 {
@@ -73,9 +45,9 @@ void snakeGame::Draw()
                 drewAlredy = true;
             }
             //looping checks through all the segments
-            for (int g = 0; g < snekSize; g++)
+            for (int g = 0; g < snek.snekSize; g++)
             {
-                if (y == snekXY[g][1] && x == snekXY[g][0])
+                if (y == snek.snekXY[g][1] && x == snek.snekXY[g][0])
                 {
                     cout << "s";
                     drewAlredy = true;
@@ -118,87 +90,33 @@ void snakeGame::Draw()
 void snakeGame::logic()
 {
     //for later assignment into each other
-    int prevXY[50][2];// this is where the real efficiency comes
-    for (int h = snekSize; h > -1; h--)
-    {
-        for (int k = 0; k < 2; k++)
-        {
-            prevXY[h][k] = snekXY[h][k];
-        }
-    }
-
-    switch (dir)
-    {
-    case STOP:
-        break;
-    case LEFT:
-        snekXY[0][0]--;
-        break;
-    case RIGHT:
-        snekXY[0][0]++;
-        break;
-    case UP:
-        Sleep(40);
-        snekXY[0][1]--;
-        break;
-    case DOWN:
-        Sleep(40);
-        snekXY[0][1]++;
-        break;
-    }
-
+    // this is where the real efficiency comes
+    snek.assignPrevXY();
 
     //wall control which will makke it wrap around
-    if (snekXY[0][0] > mapWidth)
-    {
-        snekXY[0][0] = 0;
-    }
-    else if (snekXY[0][0] < 0)
-    {
-        snekXY[0][0] = mapWidth;
-    }
-    else if (snekXY[0][1] > mapHeight)
-    {
-        snekXY[0][1] = 0;
-    }
-    else if (snekXY[0][1] < 0)
-    {
-        snekXY[0][1] = mapHeight;
-    }
+    snek.WallControl(mapWidth, mapHeight);
     //food eating logic, randomize next spawn and increase score
-    if (snekXY[0][0] == foodXY[0][0] &&
-        snekXY[0][1] == foodXY[0][1])
+
+    if (snek.snekXY[0][0] == foodXY[0][0] &&
+        snek.snekXY[0][1] == foodXY[0][1])
     {
         score++;
         foodXY[0][0] = rand() % mapWidth;
         foodXY[0][1] = rand() % mapHeight;
-        snekSize = score + 1;
+        snek.snekSize = score + 1;
     }
     //self eating logic
-    for (int i = 1; i < snekSize; i++)
-    {
-        if (snekXY[0][0] == snekXY[i][0] && 
-            snekXY[0][1] == snekXY[i][1])
-        {
-            gameOver = true;
-        }
-
-
-    }
+    snek.selfEat();
     //follow logic snake
-    for (int i = snekSize; i > 0; i--)//following thhe assigning of variables from the tail
-    {
-        snekXY[i][0] = prevXY[i - 1][0];
-        snekXY[i][1] = prevXY[i - 1][1];
-    }
+    snek.follow();
 }
 
 void snakeGame::start()
 {
-    while (!gameOver)
+    while (!snek.gameOver)
     {
         Draw();
-        Input();
+        snek.Input();
         logic();
     }
     
